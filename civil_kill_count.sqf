@@ -18,7 +18,7 @@ if (isServer) then {
 
         unitName = name (_this select 1);
 
-        if (_side == WEST) then { 
+        if (_side == WEST || side player == sideEnemy) then { 
             civKia = civKia + 1; 
             publicvariable "civKia"; 
             _m = createMarker [format ["m_civKia_%1", civKia], _kiaPos]; 
@@ -31,11 +31,11 @@ if (isServer) then {
     }; 
     } foreach allUnits; 
 } else { 
-    fnc_civKiaMsg = {hintSilent parseText format [" 
+    fnc_civKiaMsg = {hint parseText format [" 
         <t color='#C1C3CB' align='left'>Central: Foi constatado que um civil foi morto em ação pelas equipes AEGIS!<br/><br/>O número total de mortos civis é: </t> 
         <t color='#FFFFFF' align='left' size='1.2'>%1 </t><br/><br/> 
-        <t color='#C1C3CB' align='left' size='1'>Civilians KIA are marked on the map with a </t> 
-        <t color='#65B418' align='left' shadow='1.2'>green dot</t> <br/><br/> 
+        <t color='#C1C3CB' align='left' size='1'>Os civis assassinados estão marcados no mapa com um </t> 
+        <t color='#65B418' align='left' shadow='1.2'>ponto verde</t> <br/><br/> 
         <t>Quem matou foi o %2</t>
         "
         // Adicionamos então o unitName ao format.
