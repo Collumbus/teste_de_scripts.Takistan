@@ -13,21 +13,19 @@ class Mission
 		"ADDON",
 		"ace_nametags",
 		"ace_advanced_ballistics",
-		"ace_common",
 		"ace_hearing",
 		"ace_interaction",
 		"ace_map",
 		"ace_microdagr",
 		"ace_mk6mortar",
 		"ace_weather",
-		"ace_medical",
 		"A3_Characters_F_BLUFOR",
 		"a3_characters_f"
 	};
 	addOnsAuto[]=
 	{
 		"lop_faction_tak_civ",
-		"ADDON",
+		"addon",
 		"A3_Characters_F_BLUFOR",
 		"a3_characters_f",
 		"A3_Structures_F_Training",
