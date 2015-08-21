@@ -513,7 +513,7 @@ class Mission
 				items=1;
 				class Item0
 				{
-					position[]={5256.8149,83.040001,10999.527};
+					position[]={5503.0024,83.040001,11247.108};
 					azimut=25.635553;
 					id=25;
 					side="WEST";

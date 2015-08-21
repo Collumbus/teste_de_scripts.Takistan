@@ -1,6 +1,6 @@
-fnc_civkia_AEGIS = { 
-    private ["_side","_kiaPos"]; 
-    _kiaPos = getPos (_this select 0); 
+fnc_civkia_AEGIS = {
+    private ["_side","_kiaPos"];
+    _kiaPos = getPos (_this select 0);
     _side = side (_this select 1);
 
     // Pega o nome da unidade e seta a variavel
@@ -10,51 +10,39 @@ fnc_civkia_AEGIS = {
 
         unitName = name (_this select 1);
 
-        if (_side == WEST || _side == sideEnemy) then { 
-            civKia = civKia + 1; 
-            publicvariable "civKia"; 
-            marker = createMarker [format ["m_civKia_%1", civKia], _kiaPos]; 
-            marker setMarkerShape "ICON"; marker setMarkerType "mil_dot"; marker setMarkerColor "ColorGreen"; marker setMarkerText format ["CKIA-%1 - %2", civKia, unitName]; 
-            publicVariable "marker";  
+        if (_side == WEST || _side == sideEnemy) then {
+            civKia = civKia + 1;
+            publicvariable "civKia";
+            marker = createMarker [format ["m_civKia_%1", civKia], _kiaPos];
+            marker setMarkerShape "ICON"; marker setMarkerType "kia"; marker setMarkerColor "ColorRed"; marker setMarkerText format ["Civil Morto #%1 por %2", civKia, unitName];
+            publicVariable "marker";
 
-
-            [(hint parseText format [" 
-            <t color='#00B1CC' align='left' size='1.2'>CENTRAL:</t>
-            <t color='#C1C3CB' align='left'> Foi constatado que um civil foi morto em ação pelas equipes AEGIS!<br/><br/>O número total de mortos civis é: </t><t color='#CC1B00' align='left' size='1.2'>%1 </t><br/><br/> 
-            <t color='#C1C3CB' align='left' size='1'>Os civis assassinados estão marcados no mapa com um </t> 
-            <t color='#65B418' align='left' shadow='1.2'>ponto verde</t><t color='#C1C3CB' align='left'>.</t><br/><br/> 
-            <t color='#CC1B00' align='left'>     Quem matou foi o %2</t>", civKia, unitName])] call BIS_fnc_MP; 
-        }; 
+            [["CivilDeath", [format ["%1 matou um civil", unitName], format ["Esta ação terá consequências!<br/>Civis mortos: %1", civKia]]], "BIS_fnc_showNotification", true] call BIS_fnc_MP;
+        };
     };
 
 
-    { 
-        if ((side _x == Civilian) && (_x iskindof "Man")) then { 
-         _x addEventhandler ["killed",fnc_civkia_AEGIS]; 
-        }; 
-    } foreach allUnits; 
 
 
-if (!isServer) exitWith {};
+
+    if (!isServer) exitWith {};
 
     civKia = 0;
-    publicvariable "civKia"; 
+    publicvariable "civKia";
 
     // Declara uma variavel fora do escopo normal
+    unitName = "";
 
-    unitName = ""; 
-
-    
-    /*
-} else { 
-    fnc_civKiaMsg = {hint parseText format [" 
-        <t color='#C1C3CB' align='left'>Central: Foi constatado que um civil foi morto em ação pelas equipes AEGIS!<br/><br/>O número total de mortos civis é: </t> 
-        <t color='#FFFFFF' align='left' size='1.2'>%1 </t><br/><br/> 
-        <t color='#C1C3CB' align='left' size='1'>Os civis assassinados estão marcados no mapa com um </t> 
-        <t color='#65B418' align='left' shadow='1.2'>ponto verde</t> <br/><br/> 
-        <t>Quem matou foi o %2</t>
-        "
-        // Adicionamos então o unitName ao format.
-        , civKia, unitName]; 
-    }; 
-  "civKia" addPublicVariableEventHandler {call fnc_civKiaMsg};*/ 
+    // Verifica de 5 em 5 segundos os civis que estao no mapa e adiciona um EH a eles caso precise.
+    private ["_allCivs"];
+    while { true } do {
+      _allCivs = allUnits - ( playableUnits + switchableUnits );
+      {
+        if(isNil { _x getVariable "CivilHasEventHandler" } && {side _x == civilian} && {!captive _x}) then {
+          _x addEventHandler ["Killed", fnc_civkia_AEGIS];
+          _x setVariable ["CivilHasEventHandler", true];
+        };
+      } forEach _allCivs;
+      // Aumentar caso de zica de performance
+      sleep 5;
+    };
